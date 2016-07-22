@@ -7,8 +7,11 @@
 #patched
 function dlog
 {
-        cmd=$(history -n -N 1 | tail -1)
-        p_dir=$(pwd)
-        logger -p authpriv.info -- "[audit $SUDO_USER as $LOGNAME on ] $p_dir: $cmd"
+        log_cmd=$(history -n -N 1 | tail -1 | sed 's/^\s*//')
+        log_dir=$(pwd)
+        log_tty=$(who -mu | awk '{print $2}')
+        log_loginpid="$(who -mu | awk '{print $6}')"
+        log_pid="$$"
+        logger -p authpriv.info -- "[audit $SUDO_USER/$log_loginpid as $LOGNAME/$log_pid on $log_tty] $log_dir: $log_cmd"
 }
 trap dlog DEBUG
